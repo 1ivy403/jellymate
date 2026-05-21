@@ -3,65 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>水母陪伴 · 用户端原型</title>
+<title>JellyMate</title>
 <style>
+  /* CSS变量类型注册——让水母颜色可以过渡动画 */
+  @property --bell-hi  { syntax: '<color>';  inherits: true; initial-value: #bdeef5; }
+  @property --bell-mid { syntax: '<color>';  inherits: true; initial-value: #7fd8e8; }
+  @property --bell-lo  { syntax: '<color>';  inherits: true; initial-value: #4a9fc4; }
+  @property --aura     { syntax: '<length>'; inherits: true; initial-value: 34px; }
+  @property --aura-c   { syntax: '<color>';  inherits: true; initial-value: rgba(127,216,232,.5); }
+
   :root{
-    --deep:#0a1228;--deep2:#101d3d;
     --glow:#7fd8e8;--glow-soft:#a8e6ef;
     --ink:#dce7f5;--ink-dim:#8fa4c4;
     --panel:rgba(18,30,58,.88);
     --line:rgba(127,216,232,.18);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{height:100%;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-    background:var(--deep);color:var(--ink);overflow:hidden;user-select:none;}
-
-  /* ── 桌面 ── */
-  #desktop{
-    position:relative;width:100%;height:100vh;
-    background:
-      radial-gradient(900px 600px at 78% 18%,#1a2b52 0%,transparent 60%),
-      radial-gradient(700px 500px at 20% 88%,#142244 0%,transparent 55%),
-      linear-gradient(160deg,#0c1530 0%,#0a1228 60%,#070d1f 100%);
-    transition:filter .8s ease;
+  /* 全透明背景——鼠标由 main.js 控制穿透 */
+  html,body{
+    height:100%;width:100%;overflow:hidden;
+    background:#0a1228!important;
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    color:var(--ink);user-select:none;
   }
-
-  /* ── 工作窗口 ── */
-  .work-window{
-    position:absolute;background:var(--panel);
-    border:1px solid var(--line);border-radius:14px;
-    backdrop-filter:blur(8px);box-shadow:0 24px 60px rgba(0,0,0,.45);
-  }
-  #win-doc{left:5%;top:9%;width:46%;height:62%;}
-  #win-chat{right:5%;top:14%;width:34%;height:48%;}
-  .win-bar{height:38px;display:flex;align-items:center;gap:7px;
-    padding:0 14px;border-bottom:1px solid var(--line);}
-  .dot{width:11px;height:11px;border-radius:50%;}
-  .dot.r{background:#ff6b6b;}.dot.y{background:#ffd36b;}.dot.g{background:#6bdc97;}
-  .win-title{margin-left:10px;font-size:13px;color:var(--ink-dim);}
-  .win-body{padding:20px 22px;}
-  .line-skel{height:9px;border-radius:5px;background:rgba(143,164,196,.16);margin-bottom:13px;}
-  .s1{width:88%;}.s2{width:72%;}.s3{width:94%;}.s4{width:55%;}.s5{width:80%;}
-  .chat-bubble{max-width:78%;padding:9px 13px;border-radius:13px;font-size:12.5px;
-    margin-bottom:11px;line-height:1.5;color:var(--ink-dim);}
-  .chat-bubble.in{background:rgba(143,164,196,.13);}
-  .chat-bubble.out{background:rgba(127,216,232,.15);margin-left:auto;color:var(--glow-soft);}
-
-  /* ── 专注计时 ── */
-  #focus-tag{
-    position:fixed;right:60px;top:24px;
-    background:rgba(255,217,128,.14);border:1px solid rgba(255,217,128,.3);
-    color:#ffd980;font-size:12px;padding:6px 14px;border-radius:20px;
-    opacity:0;transition:opacity .5s;z-index:40;pointer-events:none;
-  }
-  #focus-tag.show{opacity:1;}
 
   /* ══════════════ 水母主体 ══════════════ */
   #jelly-wrap{
     position:fixed;width:200px;height:300px;
     cursor:grab;z-index:50;
-    opacity:.8;   /* ← 正常态 80% */
-    transition:opacity .8s ease,filter .8s ease;
+    opacity:.8;
+    transition:opacity .8s ease,
+               transform 1.2s cubic-bezier(.16,1,.3,1),
+               --bell-hi 1.6s cubic-bezier(.16,1,.3,1),
+               --bell-mid 1.6s cubic-bezier(.16,1,.3,1),
+               --bell-lo  1.6s cubic-bezier(.16,1,.3,1),
+               --aura     1.6s cubic-bezier(.16,1,.3,1),
+               --aura-c   1.6s cubic-bezier(.16,1,.3,1);
     will-change:left,top;
   }
   #jelly-wrap:active{cursor:grabbing;}
@@ -82,7 +59,6 @@
     opacity:.92;
     box-shadow:0 0 var(--aura,38px) var(--aura-c,rgba(127,216,232,.55));
     animation:pulse 6s ease-in-out infinite;
-    /* 颜色切换延长 + 弹性曲线，更有生命感 */
     transition:background 1.6s cubic-bezier(.16,1,.3,1),
                box-shadow  1.6s cubic-bezier(.16,1,.3,1);
     pointer-events:none;
@@ -93,17 +69,12 @@
     width:80px;height:58px;border-radius:50%;
     background:radial-gradient(ellipse,rgba(255,255,255,.4),transparent 70%);
   }
-
   .eyes{
     position:absolute;left:50%;top:86px;
     display:flex;gap:26px;z-index:3;pointer-events:none;
     transition:transform .12s ease;
   }
-  .eye{
-    width:11px;height:14px;background:#0a1228;border-radius:50%;
-    animation:blink 5.5s infinite;
-    transition:transform .12s ease,border-radius .15s;
-  }
+  .eye{width:11px;height:14px;background:#0a1228;border-radius:50%;animation:blink 5.5s infinite;transition:transform .12s ease;}
   @keyframes blink{0%,94%,100%{transform:scaleY(1);}97%{transform:scaleY(.1);}}
   .cheeks{position:absolute;left:50%;top:104px;transform:translateX(-50%);display:flex;gap:62px;z-index:2;pointer-events:none;}
   .cheek{width:15px;height:9px;background:rgba(255,150,170,.5);border-radius:50%;}
@@ -122,7 +93,7 @@
   .tent:nth-child(5){left:110px;animation-delay:1.6s;height:92px;}
   @keyframes sway{0%,100%{transform:rotate(-9deg);}50%{transform:rotate(9deg);}}
 
-  /* ── Mood 主题 ── */
+  /* ── Mood ── */
   .mood-calm   {--bell-hi:#bdeef5;--bell-mid:#7fd8e8;--bell-lo:#4a9fc4;--aura:34px;--aura-c:rgba(127,216,232,.5);}
   .mood-curious{--bell-hi:#bdeef5;--bell-mid:#7fd8e8;--bell-lo:#4a9fc4;--aura:44px;--aura-c:rgba(127,216,232,.65);}
   .mood-focus  {--bell-hi:#fff0c4;--bell-mid:#ffd980;--bell-lo:#d49a3a;--aura:60px;--aura-c:rgba(255,217,128,.7);}
@@ -130,20 +101,16 @@
   .mood-happy  {--bell-hi:#ffd6e6;--bell-mid:#ff9ec4;--bell-lo:#d4537e;--aura:70px;--aura-c:rgba(255,158,196,.75);}
   .mood-poked  {--bell-hi:#ffe0c4;--bell-mid:#ffb060;--bell-lo:#d46010;--aura:55px;--aura-c:rgba(255,165,80,.72);}
 
-  /* 困倦专用动画 */
   .mood-sleepy .bell{animation:pulse-sleepy 8s ease-in-out infinite!important;}
   @keyframes pulse-sleepy{0%,100%{transform:translateX(-50%) scaleY(1);}60%{transform:translateX(-50%) scaleY(.94) translateY(4px);}}
   .mood-sleepy .eye{animation:blink-sleepy 3s infinite;}
   @keyframes blink-sleepy{0%,50%{transform:scaleY(1);}55%,100%{transform:scaleY(.15);}}
 
-  /* ── 拖拽 / 按压 ── */
-  #jelly-wrap.dragging{cursor:grabbing;}
   #jelly-wrap.dragging #jelly-float,
   #jelly-wrap.dragging .bell{animation-play-state:paused;}
   #jelly-wrap.pressing .bell{transform:translateX(-50%) scaleY(.80) scaleX(1.14)!important;animation:none!important;}
   #jelly-wrap.pressing #jelly-float{animation-play-state:paused;}
 
-  /* ── 频繁点击（被戳）── */
   #jelly-wrap.poked .bell{animation:poked-wobble .7s ease-in-out!important;}
   @keyframes poked-wobble{
     0%  {transform:translateX(-50%) rotate(0) scaleX(1) scaleY(1);}
@@ -157,34 +124,34 @@
   #jelly-wrap.poked .eyes .eye:first-child{transform:translateX(5px) scaleY(.6)!important;animation:none!important;}
   #jelly-wrap.poked .eyes .eye:last-child {transform:translateX(-5px) scaleY(.6)!important;animation:none!important;}
 
-  /* ── 靠近高亮 ── */
   #jelly-wrap.near .bell{box-shadow:0 0 60px rgba(127,216,232,.75),0 0 120px rgba(127,216,232,.3)!important;}
-
-  /* ── 半透明 ── */
   #jelly-wrap.faded{opacity:.28!important;}
-
-  /* ── 转圈 ── */
   #jelly-wrap.spin #jelly-float{animation:float 6s ease-in-out infinite,spin 1.4s ease-in-out;}
   @keyframes spin{0%{transform:rotate(0);}100%{transform:rotate(360deg);}}
 
-  /* ── 教学高亮圈 ── */
   #jelly-wrap.tut-active::after{
     content:"";position:absolute;inset:-12px;border-radius:50% 50% 44% 44%/60% 60% 40% 40%;
     border:2px solid rgba(127,216,232,.6);pointer-events:none;
     animation:tut-ring 1.8s ease-out infinite;
   }
   @keyframes tut-ring{0%{transform:scale(1);opacity:.8;}100%{transform:scale(1.45);opacity:0;}}
-  #jelly-wrap.tut-success .bell{
-    box-shadow:0 0 90px rgba(127,216,232,.9),0 0 160px rgba(127,216,232,.5)!important;
-  }
+  #jelly-wrap.tut-success .bell{box-shadow:0 0 90px rgba(127,216,232,.9),0 0 160px rgba(127,216,232,.5)!important;}
+
+  #rot-wrap { width:100%; height:100%; }
+
+  /* ── 贴边倾斜：头朝屏幕内侧，尾靠边缘 ── */
+  #jelly-wrap.edge-right  { transform: rotate(-15deg); }
+  #jelly-wrap.edge-left   { transform: rotate(15deg); }
+  #jelly-wrap.edge-bottom { transform: rotate(-3deg); }
+  #jelly-wrap.edge-top    { transform: rotate(180deg); }
 
   /* ── 气泡 ── */
   #bubble{
-    position:absolute;left:-60px;top:4px;
-    background:rgba(231,247,250,.95);color:#0a2540;
+    position:fixed;left:0;top:0;
+    background:rgba(231,247,250,.78);color:#0a2540;
     font-size:13px;padding:10px 15px;
-    border-radius:15px 15px 15px 4px;
-    white-space:nowrap;opacity:0;
+    border-radius:14px;
+    opacity:0;
     transform:translateY(8px) scale(.9);
     transition:opacity .4s ease,transform .4s ease;
     pointer-events:none;
@@ -192,6 +159,21 @@
     z-index:55;max-width:220px;white-space:normal;line-height:1.5;
   }
   #bubble.show{opacity:1;transform:translateY(0) scale(1);}
+
+  /* ── 专注标签入场动画 ── */
+  @keyframes focus-pop{
+    0%  {opacity:0;transform:scale(.7) translateY(-6px);}
+    70% {transform:scale(1.08) translateY(0);}
+    100%{opacity:1;transform:scale(1);}
+  }
+  /* ── 专注计时 ── */
+  #focus-tag{
+    position:fixed;right:20px;top:20px;
+    background:rgba(255,217,128,.18);border:1px solid rgba(255,217,128,.35);
+    color:#ffd980;font-size:12px;padding:6px 14px;border-radius:20px;
+    opacity:0;transition:opacity .5s;z-index:40;pointer-events:none;
+  }
+  #focus-tag.show{opacity:1;animation:focus-pop .4s cubic-bezier(.25,.9,.3,1);}
 
   /* ── 边缘召回 ── */
   #recall-edge{
@@ -204,339 +186,113 @@
     opacity:0;transition:opacity .5s;z-index:60;pointer-events:none;
   }
   #recall-edge.show{opacity:1;pointer-events:all;}
+  #recall-edge.on-left{
+    right:auto;left:0;
+    border-radius:0 12px 12px 0;
+    border-right:1px solid rgba(127,216,232,.2);border-left:none;
+  }
   #recall-edge span{animation:rpulse 2s ease-in-out infinite;}
   @keyframes rpulse{0%,100%{opacity:.45;transform:scale(.9);}50%{opacity:1;transform:scale(1.1);}}
 
-  /* ── 面板把手（嵌在面板内，随面板一起滑动）── */
-  #panel-handle{
-    position:absolute;
-    background:rgba(127,216,232,.08);
-    border:1px solid var(--line);
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer;
-    transition:background .2s;
-  }
-  #panel-handle:hover{background:rgba(127,216,232,.16);}
-  /* 从底部：把手在面板顶边以上 */
-  #panel.from-bottom #panel-handle{
-    width:52px;height:22px;top:-23px;
-    border-bottom:none;border-radius:10px 10px 0 0;
-  }
-  #panel.from-bottom #panel-handle::after,
-  #panel.from-top #panel-handle::after{
-    content:"";display:block;width:24px;height:3px;
-    background:rgba(127,216,232,.38);border-radius:2px;
-  }
-  /* 从顶部：把手在面板底边以下 */
-  #panel.from-top #panel-handle{
-    width:52px;height:22px;bottom:-23px;
-    border-top:none;border-radius:0 0 10px 10px;
-  }
-  /* 从右侧：把手在面板左边以外 */
-  #panel.from-right #panel-handle{
-    width:22px;height:52px;left:-23px;
-    border-right:none;border-radius:10px 0 0 10px;
-  }
-  #panel.from-right #panel-handle::after,
-  #panel.from-left #panel-handle::after{
-    content:"";display:block;width:3px;height:24px;
-    background:rgba(127,216,232,.38);border-radius:2px;
-  }
-  /* 从左侧：把手在面板右边以外 */
-  #panel.from-left #panel-handle{
-    width:22px;height:52px;right:-23px;
-    border-left:none;border-radius:0 10px 10px 0;
-  }
 
-  /* ── 控制面板（方向动态，4 种滑入方式）── */
-  #panel{
-    position:fixed;
-    background:var(--panel);border:1px solid var(--line);
-    backdrop-filter:blur(14px);
-    display:flex;flex-direction:column;gap:10px;
-    box-shadow:0 0 40px rgba(0,0,0,.55);
-    z-index:80;
-    padding:16px 20px 22px;
-    overflow:visible;
-    transition:transform .45s cubic-bezier(.25,.9,.3,1);
-  }
-  /* 从底部滑入 */
-  #panel.from-bottom{
-    left:0;right:0;bottom:0;
-    border-bottom:none;border-radius:20px 20px 0 0;
-    transform:translateY(100%);
-  }
-  #panel.from-bottom.show{transform:translateY(0);}
-  /* 从顶部滑入 */
-  #panel.from-top{
-    left:0;right:0;top:0;
-    border-top:none;border-radius:0 0 20px 20px;
-    transform:translateY(-100%);
-  }
-  #panel.from-top.show{transform:translateY(0);}
-  /* 从右侧滑入 */
-  #panel.from-right{
-    right:0;top:0;bottom:0;width:300px;
-    border-right:none;border-radius:20px 0 0 20px;
-    transform:translateX(100%);
-  }
-  #panel.from-right.show{transform:translateX(0);}
-  /* 从左侧滑入 */
-  #panel.from-left{
-    left:0;top:0;bottom:0;width:300px;
-    border-left:none;border-radius:0 20px 20px 0;
-    transform:translateX(-100%);
-  }
-  #panel.from-left.show{transform:translateX(0);}
-  .panel-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
-  .panel-label{font-size:11.5px;color:var(--ink-dim);width:62px;flex-shrink:0;}
-  .btn{
-    font-family:inherit;font-size:12.5px;
-    background:rgba(127,216,232,.1);color:var(--glow-soft);
-    border:1px solid var(--line);padding:6px 13px;border-radius:9px;cursor:pointer;
-    transition:all .2s;
-  }
-  .btn:hover{background:rgba(127,216,232,.22);transform:translateY(-1px);}
-  .btn.active{background:var(--glow);color:#06121f;border-color:var(--glow);}
-  .btn.warn{color:#ffc4c4;}
-  .panel-title{font-size:10.5px;color:var(--glow);letter-spacing:1px;text-align:center;opacity:.7;}
-  .panel-divider{height:1px;background:var(--line);margin:2px 0;}
-
-  /* ── 情绪切换：只靠颜色渐变，不做形变动画 ── */
-
-  /* ── 好奇对话卡（悬停触发后点击出现）── */
-  #curious-card{
-    position:fixed;
-    background:rgba(10,20,50,.96);
-    border:1px solid rgba(127,216,232,.28);
-    border-radius:16px;padding:14px 16px 12px;
-    z-index:90;width:220px;
-    box-shadow:0 16px 48px rgba(0,0,0,.5);
-    backdrop-filter:blur(14px);
-    opacity:0;pointer-events:none;
-    transform:translateY(8px) scale(.95);
-    transition:opacity .28s ease,transform .28s cubic-bezier(.25,.9,.3,1);
-  }
-  #curious-card.show{opacity:1;pointer-events:all;transform:translateY(0) scale(1);}
-  .cc-q{font-size:12.5px;color:var(--ink-dim);margin-bottom:10px;letter-spacing:.2px;}
-  .cc-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;}
-  .cc-chip{
-    font-family:inherit;font-size:12px;
-    background:rgba(127,216,232,.1);color:var(--glow-soft);
-    border:1px solid rgba(127,216,232,.2);
-    padding:6px 12px;border-radius:18px;cursor:pointer;
-    transition:all .18s;line-height:1;
-  }
-  .cc-chip:hover{background:rgba(127,216,232,.22);}
-  .cc-close{
-    font-family:inherit;font-size:11px;color:rgba(143,164,196,.4);
-    background:none;border:none;cursor:pointer;
-    width:100%;text-align:center;padding:2px;display:block;
-  }
-  .cc-close:hover{color:var(--ink-dim);}
-
-  /* ── 提示浮条 ── */
-  #hint-strip{
-    position:fixed;bottom:0;left:0;right:0;
-    font-size:11px;color:rgba(127,216,232,.25);
-    text-align:center;padding:4px;
-    pointer-events:none;z-index:65;letter-spacing:.4px;
-    transition:opacity .4s;
-  }
-  #hint-strip.hidden{opacity:0;}
-
-  /* ════════════════ 教学卡 ════════════════ */
+  /* ── 教学卡 ── */
   #tut-card{
-    position:fixed;width:256px;
-    background:rgba(10,20,50,.97);
+    position:fixed;width:256px;background:rgba(10,20,50,.97);
     border:1px solid rgba(127,216,232,.28);border-radius:18px;
     padding:18px 20px 16px;z-index:100;
     box-shadow:0 24px 60px rgba(0,0,0,.55);
-    backdrop-filter:blur(16px);
-    display:none;
+    backdrop-filter:blur(16px);display:none;
     animation:tut-in .35s cubic-bezier(.25,.9,.3,1);
   }
   #tut-card.show{display:block;}
   @keyframes tut-in{from{opacity:0;transform:translateY(-10px) scale(.96);}to{opacity:1;transform:none;}}
   #tut-card.step-done{border-color:rgba(127,216,232,.7);}
-
   .tut-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
   .tut-progress{font-size:10px;color:rgba(127,216,232,.45);letter-spacing:1.5px;}
-  .tut-skip{font-family:inherit;font-size:11px;color:rgba(143,164,196,.4);
-    background:none;border:none;cursor:pointer;}
+  .tut-skip{font-family:inherit;font-size:11px;color:rgba(143,164,196,.4);background:none;border:none;cursor:pointer;}
   .tut-skip:hover{color:var(--ink-dim);}
-
-  /* 进度条 */
+  .tut-header-right{display:flex;align-items:center;gap:6px;}
+  .tut-back{font-family:inherit;font-size:11px;color:rgba(127,216,232,.4);background:none;border:none;cursor:pointer;transition:color .18s;}
+  .tut-back:hover{color:var(--glow);}
+  .tut-back:disabled{opacity:.2;cursor:default;pointer-events:none;}
   .tut-pbar{height:2px;background:rgba(127,216,232,.12);border-radius:2px;margin-bottom:16px;overflow:hidden;}
   .tut-pfill{height:100%;background:var(--glow);border-radius:2px;transition:width .4s ease;}
-
   .tut-title{font-size:17px;color:var(--ink);font-weight:600;line-height:1.3;margin-bottom:7px;}
   .tut-sub{font-size:12.5px;color:var(--ink-dim);line-height:1.65;margin-bottom:14px;white-space:pre-line;}
-
-  .tut-action-btn{
-    font-family:inherit;font-size:13px;
-    background:var(--glow);color:#06121f;
-    border:none;padding:9px 22px;border-radius:22px;cursor:pointer;
-    width:100%;transition:opacity .2s;display:none;
-  }
+  .tut-action-btn{font-family:inherit;font-size:13px;background:var(--glow);color:#06121f;border:none;padding:9px 22px;border-radius:22px;cursor:pointer;width:100%;transition:opacity .2s;display:none;}
   .tut-action-btn.show{display:block;}
   .tut-action-btn:hover{opacity:.88;}
-
-  /* 等待动作时的呼吸提示 */
-  .tut-waiting{
-    font-size:11px;color:rgba(127,216,232,.45);text-align:center;
-    margin-top:8px;display:none;letter-spacing:.5px;
-  }
+  .tut-waiting{font-size:11px;color:rgba(127,216,232,.45);text-align:center;margin-top:8px;display:none;letter-spacing:.5px;}
   .tut-waiting.show{display:block;animation:tut-wait 2s ease-in-out infinite;}
   @keyframes tut-wait{0%,100%{opacity:.4;}50%{opacity:.9;}}
-
-  /* 完成闪光 */
-  .tut-done-flash{
-    font-size:13px;color:var(--glow);text-align:center;
-    margin-top:6px;display:none;letter-spacing:.3px;
-  }
+  .tut-done-flash{font-size:13px;color:var(--glow);text-align:center;margin-top:6px;display:none;}
   .tut-done-flash.show{display:block;animation:flash-in .3s ease;}
   @keyframes flash-in{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:none;}}
-
-  /* 箭头指向水母 */
-  .tut-arrow{
-    font-size:11px;color:rgba(127,216,232,.35);
-    text-align:right;margin-top:10px;
-    animation:arr 1.5s ease-in-out infinite;
-    letter-spacing:.3px;
-  }
+  .tut-arrow{font-size:11px;color:rgba(127,216,232,.35);text-align:right;margin-top:10px;animation:arr 1.5s ease-in-out infinite;}
   @keyframes arr{0%,100%{opacity:.35;transform:translateX(0);}50%{opacity:.7;transform:translateX(5px);}}
 </style>
 </head>
 <body>
-<div id="desktop">
-  <div class="work-window" id="win-doc">
-    <div class="win-bar">
-      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="win-title">季度复盘.doc</span>
+
+<div id="focus-tag">专注中 · <span id="focus-time">25:00</span></div>
+
+<div id="bubble">我在</div>
+
+<div id="jelly-wrap" class="mood-calm">
+  <div id="rot-wrap">
+  <div id="jelly-float">
+    <div class="bell"></div>
+    <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+    <div class="cheeks"><div class="cheek"></div><div class="cheek"></div></div>
+    <div class="tentacles">
+      <div class="tent"></div><div class="tent"></div><div class="tent"></div>
+      <div class="tent"></div><div class="tent"></div>
     </div>
-    <div class="win-body">
-      <div class="line-skel s3"></div><div class="line-skel s1"></div>
-      <div class="line-skel s2"></div><div class="line-skel s5"></div>
-      <div class="line-skel s3"></div><div class="line-skel s4"></div>
-      <div class="line-skel s1"></div><div class="line-skel s2"></div>
-    </div>
-  </div>
-  <div class="work-window" id="win-chat">
-    <div class="win-bar">
-      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="win-title">团队消息</span>
-    </div>
-    <div class="win-body">
-      <div class="chat-bubble in">这版方案下午能给到吗</div>
-      <div class="chat-bubble out">在改了，五点前发你</div>
-      <div class="chat-bubble in">辛苦辛苦</div>
-    </div>
-  </div>
+  </div><!-- /jelly-float -->
+  </div><!-- /rot-wrap -->
+</div><!-- /jelly-wrap -->
 
-  <div id="focus-tag">专注中 · <span id="focus-time">25:00</span></div>
+<div id="recall-edge"><span>🪼</span></div>
 
-  <div id="jelly-wrap" class="mood-calm">
-    <div id="bubble">我在</div>
-    <div id="jelly-float">
-      <div class="bell"></div>
-      <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
-      <div class="cheeks"><div class="cheek"></div><div class="cheek"></div></div>
-      <div class="tentacles">
-        <div class="tent"></div><div class="tent"></div><div class="tent"></div>
-        <div class="tent"></div><div class="tent"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="recall-edge"><span>🪼</span></div>
-</div>
-
-<div id="panel">
-  <div id="panel-handle"></div>
-  <div class="panel-title">— 调试面板（真实产品中由系统感知触发，此处手动模拟）—</div>
-
-  <div class="panel-row">
-    <span class="panel-label">情绪状态</span>
-    <button class="btn active" data-mood="calm">安静</button>
-    <button class="btn" data-mood="curious">好奇</button>
-    <button class="btn" data-mood="focus">陪伴·专注</button>
-    <button class="btn" data-mood="sleepy">困倦</button>
-    <button class="btn" data-mood="happy">开心</button>
-  </div>
-
-  <div class="panel-row">
-    <span class="panel-label">陪伴场景</span>
-    <button class="btn" id="btn-focus">▶ 陪我专注</button>
-    <button class="btn" id="btn-back">模拟离开又回来</button>
-  </div>
-
-  <div class="panel-row">
-    <span class="panel-label">边界控制</span>
-    <button class="btn warn" id="btn-dismiss">让它退下</button>
-    <button class="btn" id="btn-fade">半透明陪伴</button>
-  </div>
-
-  <div class="panel-divider"></div>
-
-  <div class="panel-row">
-    <span class="panel-label">手势教学</span>
-    <button class="btn" id="btn-tutorial">▶ 新手引导</button>
-    <span style="font-size:11px;color:var(--ink-dim)">像游戏新手教学，一步步学会与水母互动</span>
-  </div>
-</div>
-
-<!-- 教学卡 -->
 <div id="tut-card">
   <div class="tut-header">
-    <span class="tut-progress" id="tut-progress">1 / 8</span>
-    <button class="tut-skip" id="tut-skip-btn">跳过</button>
+    <span class="tut-progress" id="tut-progress">1 / 9</span>
+    <div class="tut-header-right">
+      <button class="tut-back" id="tut-back-btn" disabled>← 上一步</button>
+      <button class="tut-skip" id="tut-skip-btn">跳过</button>
+    </div>
   </div>
   <div class="tut-pbar"><div class="tut-pfill" id="tut-pfill" style="width:0%"></div></div>
-  <div class="tut-title" id="tut-title">你好，我是水母 🪼</div>
-  <div class="tut-sub" id="tut-sub">住在屏幕的角落陪着你\n花 30 秒认识一下我？</div>
+  <div class="tut-title" id="tut-title">嘿，见到你了 🪼</div>
+  <div class="tut-sub" id="tut-sub">我就住在屏幕某个角落\n花 30 秒认识一下？</div>
   <button class="tut-action-btn show" id="tut-action-btn">认识一下</button>
   <div class="tut-waiting" id="tut-waiting">正在等你操作…</div>
   <div class="tut-done-flash" id="tut-done-flash">✓ 做到了！</div>
   <div class="tut-arrow" id="tut-arrow">向右下角找找我 →</div>
 </div>
 
-<div id="curious-card">
-  <div class="cc-q">想和我说什么？</div>
-  <div class="cc-chips">
-    <button class="cc-chip" data-mood="sleepy" data-say="嗯，好好歇歇">今天有点累</button>
-    <button class="cc-chip" data-mood="happy"  data-say="那就好" data-spin="1">心情还好</button>
-    <button class="cc-chip" data-mood="calm"   data-say="先深呼吸，我在">有点压力</button>
-    <button class="cc-chip" data-action="focus">陪我专注</button>
-  </div>
-  <button class="cc-close" id="cc-close-btn">算了，随便看看你</button>
-</div>
-
-<div id="hint-strip">拖拽移动 · 靠近唤醒 · 单击打招呼 · 双击切换专注 · 长按打开面板 · 连点 4 次看反应</div>
-
 <script>
-// ────────────────────────────────────────────
-//  引用
-// ────────────────────────────────────────────
-const wrap       = document.getElementById('jelly-wrap');
-const bubble     = document.getElementById('bubble');
-const desktop    = document.getElementById('desktop');
-const focusTag   = document.getElementById('focus-tag');
-const focusTimeEl= document.getElementById('focus-time');
-const panel      = document.getElementById('panel');
-const panelHandle= document.getElementById('panel-handle');
-const recallEdge = document.getElementById('recall-edge');
-const eyesEl     = wrap.querySelector('.eyes');
-const hintStrip  = document.getElementById('hint-strip');
+// ── Electron IPC 桥（不在 Electron 里时降级为空函数）──
+const api = window.electronAPI || {
+  mouseEnterJelly: ()=>{}, mouseLeaveJelly: ()=>{},
+  dragMove: ()=>{}, setPosition: ()=>{},
+  panelOpen: ()=>{}, panelClose: ()=>{},
+};
+const IS_ELECTRON = !!window.electronAPI;
 
-// ────────────────────────────────────────────
-//  位置管理
-// ────────────────────────────────────────────
+// ── 引用 ──
+const wrap        = document.getElementById('jelly-wrap');
+const bubble      = document.getElementById('bubble');
+const focusTag    = document.getElementById('focus-tag');
+const focusTimeEl = document.getElementById('focus-time');
+const recallEdge  = document.getElementById('recall-edge');
+const eyesEl      = wrap.querySelector('.eyes');
+
+// ── 位置 ──
 let posX = 0, posY = 0;
-
 function initPosition(){
-  posX = window.innerWidth  - wrap.offsetWidth  - 60;
-  posY = window.innerHeight - wrap.offsetHeight + 30;
+  posX = window.innerWidth  - wrap.offsetWidth  - 30;
+  posY = window.innerHeight - wrap.offsetHeight - 20;
   applyPos();
 }
 function applyPos(){
@@ -549,13 +305,9 @@ function animateTo(x, y, dur=1.1){
   setTimeout(() => wrap.style.transition = '', dur*1000+50);
 }
 
-// ────────────────────────────────────────────
-//  Mood 系统（含 happy→calm 定时 + source 追踪）
-// ────────────────────────────────────────────
+// ── Mood ──
 const MOODS = ['calm','curious','focus','sleepy','happy','poked'];
-let currentMood = 'calm';
-let _curiositySource = null;  // 'proximity' | 'user'
-let happyTO = null;
+let currentMood = 'calm', _curiositySource = null, happyTO = null;
 
 const lines = {
   calm:   ['我在','嗯，陪着你','慢慢来就好','没事，我在这'],
@@ -574,27 +326,40 @@ function setMood(m, source){
   currentMood = m;
   if(m !== 'curious') _curiositySource = null;
   if(source) _curiositySource = source;
-
-  document.querySelectorAll('[data-mood]').forEach(b =>
-    b.classList.toggle('active', b.dataset.mood === m));
-  desktop.style.filter =
-    m==='sleepy' ? 'brightness(.82) saturate(.85)' :
-    m==='happy'  ? 'brightness(1.08)' : 'none';
-
-  // 情绪切换：只靠颜色渐变，不触发额外动画
-  // happy 5s 后归 calm
   if(m === 'happy'){
-    happyTO = setTimeout(() => {
-      if(currentMood === 'happy') setMood('calm');
-    }, 5000);
+    happyTO = setTimeout(() => { if(currentMood==='happy') setMood('calm'); }, 5000);
   }
 }
 
-// ────────────────────────────────────────────
-//  气泡
-// ────────────────────────────────────────────
+// ── 气泡 ──
 let bubbleTO = null;
+function repositionBubble(){
+  const bw=220, gap=12;
+  let bx, by;
+  if(edgeDockSide==='right'){
+    bx = posX - bw - gap;
+    by = posY + 50;
+  } else if(edgeDockSide==='left'){
+    bx = posX + wrap.offsetWidth + gap;
+    by = posY + 50;
+  } else if(edgeDockSide==='top'){
+    bx = posX + (wrap.offsetWidth-bw)/2;
+    by = posY + wrap.offsetHeight + gap;
+  } else if(edgeDockSide==='bottom'){
+    bx = posX + (wrap.offsetWidth-bw)/2;
+    by = posY - 65;
+  } else {
+    bx = posX - bw - gap;
+    by = posY + 40;
+    if(bx < 8) bx = posX + wrap.offsetWidth + gap;
+  }
+  bx=Math.max(8,Math.min(bx,window.innerWidth-bw-8));
+  by=Math.max(8,Math.min(by,window.innerHeight-80));
+  bubble.style.left=bx+'px';
+  bubble.style.top=by+'px';
+}
 function speak(text, dur=2800){
+  repositionBubble();
   bubble.textContent = text;
   bubble.classList.add('show');
   clearTimeout(bubbleTO);
@@ -605,12 +370,15 @@ function speakMood(){
   speak(pool[Math.floor(Math.random()*pool.length)]);
 }
 
-// ────────────────────────────────────────────
-//  状态管理
-// ────────────────────────────────────────────
+// ── 状态 ──
 let isOut = false, isFaded = false, isDismissed = false;
+let edgeDockSide = null;
 
 function swimOut(){
+  if(edgeDockSide){
+    edgeDockSide=null;
+    wrap.classList.remove('edge-right','edge-left','edge-bottom','edge-top');
+  }
   isOut = true;
   animateTo(posX, window.innerHeight - wrap.offsetHeight - 90);
 }
@@ -621,49 +389,87 @@ function sinkBack(){
 function dismiss(){
   isDismissed = true; isFaded = false;
   wrap.classList.remove('faded');
-  wrap.style.opacity = '';
-  animateTo(window.innerWidth + 200, posY, 1.0);
-  wrap.style.opacity = '0.15';
+  const goLeft = edgeDockSide === 'left';
+  const targetX = goLeft ? -wrap.offsetWidth - 200 : window.innerWidth + 200;
+  wrap.style.transition = 'left 1.0s cubic-bezier(.25,.9,.3,1), top 1.0s cubic-bezier(.25,.9,.3,1), opacity 0.8s ease';
+  posX = targetX;
+  wrap.style.left = posX + 'px';
+  wrap.style.opacity = '0.1';
+  setTimeout(() => wrap.style.transition = '', 1100);
+  if(goLeft) recallEdge.classList.add('on-left'); else recallEdge.classList.remove('on-left');
   recallEdge.classList.add('show');
   bubble.classList.remove('show');
+  if(IS_ELECTRON) api.mouseLeaveJelly();
 }
 function recall(){
   isDismissed = false; isFaded = false;
-  recallEdge.classList.remove('show');
+  edgeDockSide = null;
+  wrap.classList.remove('edge-right','edge-left','edge-bottom','edge-top');
+  recallEdge.classList.remove('show','on-left');
   wrap.style.opacity = '';
   wrap.classList.remove('faded');
-  posX = window.innerWidth - wrap.offsetWidth - 60;
-  posY = window.innerHeight - wrap.offsetHeight - 90;
+  posX = window.innerWidth - wrap.offsetWidth - 30;
+  posY = window.innerHeight - wrap.offsetHeight - 20;
   animateTo(posX, posY);
-  setMood('happy');
-  speak('我回来啦');
+  setMood('happy'); speak('我回来啦');
   wrap.classList.add('spin');
   setTimeout(() => wrap.classList.remove('spin'), 1500);
   isOut = true;
 }
 function toggleFade(){
   if(isFaded){
-    // 取消半透明
     isFaded = false;
     wrap.classList.remove('faded');
-    document.getElementById('btn-fade').textContent = '半透明陪伴';
+    lastJellyNearTime = Date.now(); // 恢复后重置计时，避免立刻再次半透明
   } else {
     isFaded = true; isDismissed = false;
     recallEdge.classList.remove('show');
     wrap.style.opacity = '';
     wrap.classList.add('faded');
-    document.getElementById('btn-fade').textContent = '取消半透明';
   }
 }
 
-// ────────────────────────────────────────────
-//  ★ 拖拽（弹性跟随）
-// ────────────────────────────────────────────
+// ── 鼠标进出水母 → 穿透控制 ──
+wrap.addEventListener('mouseenter', () => {
+  api.mouseEnterJelly();
+  if(isDismissed || drag.active) return;
+  clearTimeout(hoverCuriousTO);
+  hoverCuriousTO = setTimeout(() => {
+    if(['calm','sleepy'].includes(currentMood)){
+      setMood('curious','hover');
+      if(!isOut && !edgeDockSide) swimOut();
+    }
+  }, 3000);
+});
+wrap.addEventListener('mouseleave', () => {
+  clearTimeout(hoverCuriousTO);
+  if(!tutCard.classList.contains('show')){
+    api.mouseLeaveJelly();
+  }
+  if(_curiositySource === 'hover'){
+    setTimeout(() => {
+      if(currentMood==='curious' && _curiositySource==='hover'){
+        setMood('calm');
+      }
+    }, 2500);
+  }
+});
+
+function enableInteract(){ api.mouseEnterJelly(); }
+recallEdge.addEventListener('mouseenter', enableInteract);
+recallEdge.addEventListener('mouseleave', () => {
+  if(!wrap.matches(':hover')) api.mouseLeaveJelly();
+});
+
+let hoverCuriousTO = null;
+
+// ── 拖拽 ──
 const drag = {
   active:false, moved:false, longFired:false,
   sx:0, sy:0, ox:0, oy:0, tx:0, ty:0,
   startTime:0, longTO:null, rafId:null
 };
+let afterDragCooldown = false;
 
 function dragTick(){
   if(!drag.active) return;
@@ -681,6 +487,7 @@ document.addEventListener('mouseup', onUp);
 function onDown(e){
   if(e.button !== 0) return;
   e.preventDefault();
+  lastJellyNearTime = Date.now();
   drag.active=true; drag.moved=false; drag.longFired=false;
   drag.sx=e.clientX; drag.sy=e.clientY;
   drag.ox=posX; drag.oy=posY;
@@ -694,7 +501,7 @@ function onMove(e){
   mouseX=e.clientX; mouseY=e.clientY;
   if(!drag.active) return;
   const dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
-  if(!drag.moved && (Math.abs(dx)>6 || Math.abs(dy)>6)){
+  if(!drag.moved && (Math.abs(dx)>6||Math.abs(dy)>6)){
     drag.moved=true;
     clearTimeout(drag.longTO);
     wrap.classList.remove('pressing');
@@ -715,323 +522,196 @@ function onUp(e){
 }
 function endDrag(){
   const W=window.innerWidth, H=window.innerHeight;
-  const cx=posX+wrap.offsetWidth/2;
-  const cy=posY+wrap.offsetHeight/2;
-  let nx=posX, ny=posY;
-  if(cx > W-100) nx = W - wrap.offsetWidth*.6;
-  else if(cx < 100) nx = -wrap.offsetWidth*.4;
-  if(cy > H-100){ ny = H - wrap.offsetHeight*.25; isOut=false; }
-  ny=Math.max(-wrap.offsetHeight*.5, Math.min(ny, H-30));
-  nx=Math.max(-wrap.offsetWidth*.5,  Math.min(nx, W-30));
+  const cx=posX+wrap.offsetWidth/2, cy=posY+wrap.offsetHeight/2;
+  let nx=posX, ny=posY, newEdge=null;
+
+  if(cx>W-100) newEdge='right';
+  else if(cx<100) newEdge='left';
+  else if(cy>H-100) newEdge='bottom';
+  else if(cy<100) newEdge='top';
+
+  // 已贴边状态再次向同侧拖动 → 退下（上下退向右，左退向左）
+  if(edgeDockSide && newEdge===edgeDockSide){
+    edgeDockSide=null;
+    wrap.classList.remove('edge-right','edge-left','edge-bottom','edge-top');
+    dismiss();
+    tutSignal('drag');
+    return;
+  }
+
+  if(newEdge==='right') nx=W-wrap.offsetWidth*.6;
+  else if(newEdge==='left') nx=-wrap.offsetWidth*.4;
+  else if(newEdge==='bottom'){ ny=H-110; isOut=false; }
+  else if(newEdge==='top'){ ny=-(wrap.offsetHeight-110); isOut=false; }
+  ny=Math.max(-(wrap.offsetHeight*.85), Math.min(ny, H-30));
+  nx=Math.max(-wrap.offsetWidth*.5, Math.min(nx, W-30));
   animateTo(nx, ny, 0.7);
-  // 拖拽结束后更新把手位置（面板未开启时）
-  if(!panel.classList.contains('show')) setTimeout(()=>applyPanelEdge(getJellyEdge()), 750);
-  // 教学进度
+
+  edgeDockSide=newEdge;
+  wrap.classList.remove('edge-right','edge-left','edge-bottom','edge-top');
+  if(newEdge) wrap.classList.add('edge-'+newEdge);
+  // 贴边后 1.5s 内不触发 curious，防止鼠标还在附近立刻弹对话框
+  afterDragCooldown=true;
+  setTimeout(()=>{ afterDragCooldown=false; }, 1500);
+
   tutSignal('drag');
 }
 function onLongPress(){
   drag.longFired=true;
+  cancelAnimationFrame(drag.rafId);
+  drag.active=false;
   wrap.classList.remove('pressing');
-  if(!panel.classList.contains('show')) openPanel();
+  dismiss();
   tutSignal('longpress');
 }
 
-// ────────────────────────────────────────────
-//  ★ 点击频率检测
-// ────────────────────────────────────────────
+// ── 点击频率 ──
 let clickCount=0, clickTO=null;
-
 function recordClick(){
   clickCount++;
   clearTimeout(clickTO);
-  if(clickCount >= 4){ onPokedRepeatedly(); clickCount=0; return; }
-  clickTO = setTimeout(() => {
+  if(clickCount>=4){ onPokedRepeatedly(); clickCount=0; return; }
+  clickTO = setTimeout(()=>{
     if(clickCount===1)      onSingleClick();
     else if(clickCount===2) onDoubleClick();
     else if(clickCount===3) onTripleClick();
     clickCount=0;
   }, 290);
 }
-
 function onSingleClick(){
   if(isDismissed) return;
-  // 半透明状态单击恢复
   if(isFaded){ toggleFade(); return; }
-  // 好奇状态下点击 → 打开对话卡
-  if(currentMood === 'curious'){
-    openCuriousCard();
-    tutSignal('tap');
-    return;
-  }
-  // 普通状态：轻应答，不过度打扰
+  if(edgeDockSide){ speakMood(); return; }
   if(!isOut) swimOut();
-  speakMood();
-  tutSignal('tap');
+  speakMood(); tutSignal('tap');
 }
 function onDoubleClick(){
   if(isDismissed) return;
   wrap.classList.add('spin');
   setTimeout(()=>wrap.classList.remove('spin'),1400);
   if(focusTimer){
-    // 已在专注中 → 双击退出
     clearInterval(focusTimer); focusTimer=null;
     focusTag.classList.remove('show');
-    setMood('calm');
-    speak('好，休息一下吧', 2800);
+    setMood('calm'); speak('好，休息一下吧',2800);
   } else {
-    // 开始专注
-    if(!isOut) swimOut();
-    startFocus();
+    if(!isOut) swimOut(); startFocus();
   }
   tutSignal('dbl');
 }
 function onTripleClick(){
   if(isDismissed) return;
   toggleFade();
+  tutSignal('triple');
 }
 function onPokedRepeatedly(){
   if(isDismissed) return;
   if(!isOut) swimOut();
   setMood('poked');
   wrap.classList.add('poked');
-  speak(lines.poked[Math.floor(Math.random()*lines.poked.length)], 2200);
-  setTimeout(()=>{ wrap.classList.remove('poked'); setMood('curious','user'); }, 2200);
+  speak(lines.poked[Math.floor(Math.random()*lines.poked.length)],2200);
+  setTimeout(()=>{ wrap.classList.remove('poked'); setMood('curious','user'); },2200);
   tutSignal('poked');
 }
 
-// ────────────────────────────────────────────
-//  ★ 鼠标靠近（眼球追踪 + 分源 curious）
-// ────────────────────────────────────────────
+// ── 眼球追踪 + 靠近 ──
 let mouseX=0, mouseY=0, nearState=false, nearTO=null;
 document.addEventListener('mousemove', e=>{ mouseX=e.clientX; mouseY=e.clientY; });
+if(IS_ELECTRON) api.onCursorPos((x,y)=>{ mouseX=x; mouseY=y; });
 
 function proximityTick(){
-  const rect = wrap.getBoundingClientRect();
-  const cx = rect.left + rect.width/2;
-  const cy = rect.top + 75;
-  const dx = mouseX-cx, dy = mouseY-cy;
-  const dist = Math.sqrt(dx*dx+dy*dy);
-
-  // 眼球追踪
-  if(dist > 0 && dist < 300){
-    const str = Math.max(0, 1-dist/300);
-    const ox = (dx/dist)*3.5*str, oy = (dy/dist)*3.5*str;
-    eyesEl.style.transform = `translateX(calc(-50% + ${ox.toFixed(2)}px)) translateY(${oy.toFixed(2)}px)`;
+  const rect=wrap.getBoundingClientRect();
+  const cx=rect.left+rect.width/2, cy=rect.top+75;
+  const dx=mouseX-cx, dy=mouseY-cy;
+  const dist=Math.sqrt(dx*dx+dy*dy);
+  if(dist>0 && dist<500){
+    const str=Math.max(0,1-dist/500);
+    const ox=(dx/dist)*6*str, oy=(dy/dist)*6*str;
+    eyesEl.style.transform=`translateX(calc(-50% + ${ox.toFixed(2)}px)) translateY(${oy.toFixed(2)}px)`;
   } else {
-    eyesEl.style.transform = 'translateX(-50%)';
+    eyesEl.style.transform='translateX(-50%)';
   }
-
-  if(dist < 160 && !nearState){
-    nearState=true;
-    wrap.classList.add('near');
-    if(dist < 80 && currentMood==='calm' && !drag.active){
-      setMood('curious','proximity');
-    }
+  if(dist<260 && !nearState){
+    nearState=true; wrap.classList.add('near');
+    lastJellyNearTime=Date.now(); // 进入 260px 才算互动，不用 500px 眼球范围
+    if(dist<130 && currentMood==='calm' && !drag.active && !afterDragCooldown) setMood('curious','proximity');
     tutSignal('proximity');
-  } else if(dist >= 185 && nearState){
-    nearState=false;
-    wrap.classList.remove('near');
+  } else if(dist>=300 && nearState){
+    nearState=false; wrap.classList.remove('near');
     clearTimeout(nearTO);
-    // 只有 proximity 触发的 curious 才自动回归
-    if(_curiositySource === 'proximity'){
-      nearTO = setTimeout(()=>{
-        if(currentMood==='curious' && _curiositySource==='proximity') setMood('calm');
-      }, 2200);
+    if(_curiositySource==='proximity'){
+      nearTO=setTimeout(()=>{ if(currentMood==='curious' && _curiositySource==='proximity') setMood('calm'); },2200);
     }
   }
-  requestAnimationFrame(proximityTick);
 }
-requestAnimationFrame(proximityTick);
+setInterval(proximityTick, 32);
 
-// ────────────────────────────────────────────
-//  ★ 悬停触发好奇（鼠标停在水母身上 1.2s）
-// ────────────────────────────────────────────
-let hoverCuriousTO = null;
-
-wrap.addEventListener('mouseenter', () => {
-  if(isDismissed || drag.active) return;
-  clearTimeout(hoverCuriousTO);
-  hoverCuriousTO = setTimeout(() => {
-    if(['calm','sleepy'].includes(currentMood)){
-      setMood('curious', 'hover');
-      if(!isOut) swimOut();
-    }
-  }, 3000);
-});
-
-wrap.addEventListener('mouseleave', () => {
-  clearTimeout(hoverCuriousTO);
-  // hover 触发的 curious：鼠标离开后延迟 2.5s 归 calm（若用户没有点击）
-  if(_curiositySource === 'hover'){
-    setTimeout(() => {
-      if(currentMood === 'curious' && _curiositySource === 'hover'){
-        setMood('calm');
-        closeCuriousCard();
-      }
-    }, 2500);
+// ── 3 分钟无互动自动半透明 ──
+let lastJellyNearTime = Date.now();
+const JELLY_FADE_IDLE = 3 * 60 * 1000;
+setInterval(()=>{
+  if(isFaded || isDismissed || drag.active) return;
+  if(Date.now() - lastJellyNearTime > JELLY_FADE_IDLE){
+    isFaded = true;
+    wrap.classList.add('faded');
   }
-});
+}, 10000);
 
-// ────────────────────────────────────────────
-//  ★ 好奇对话卡
-// ────────────────────────────────────────────
-const curiousCard = document.getElementById('curious-card');
-
-function openCuriousCard(){
-  // 定位到水母左侧或上方
-  const rect = wrap.getBoundingClientRect();
-  const cw = 228, gap = 14;
-  let left = rect.left - cw - gap;
-  let top  = rect.top  + rect.height/2 - 80;
-  if(left < 10) left = rect.right + gap;
-  if(left + cw > window.innerWidth - 10) left = Math.max(10, rect.left - cw - gap);
-  top = Math.max(10, Math.min(top, window.innerHeight - 180));
-  curiousCard.style.left = left + 'px';
-  curiousCard.style.top  = top  + 'px';
-  curiousCard.classList.add('show');
-}
-function closeCuriousCard(){
-  curiousCard.classList.remove('show');
-}
-
-document.querySelectorAll('.cc-chip').forEach(btn => {
-  btn.addEventListener('click', () => {
-    closeCuriousCard();
-    const action = btn.dataset.action;
-    if(action === 'focus'){ if(!isOut) swimOut(); startFocus(); return; }
-    const m = btn.dataset.mood ? 'mood-'+btn.dataset.mood : null;
-    if(m) setMood(btn.dataset.mood, 'user');
-    if(btn.dataset.say) speak(btn.dataset.say, 3200);
-    if(btn.dataset.spin){ wrap.classList.add('spin'); setTimeout(()=>wrap.classList.remove('spin'),1400); }
-  });
-});
-document.getElementById('cc-close-btn').addEventListener('click', () => {
-  closeCuriousCard();
-  speak('好，我在这儿', 2000);
-});
-// ────────────────────────────────────────────
-let userWasAway = false, returnDebounce = null;
-let lastReturnTime = 0;
-const RETURN_COOLDOWN = 10 * 60 * 1000; // 10 分钟内再次返回只轻声打招呼
+// ── 离开 / 回来 ──
+let userWasAway=false, returnDebounce=null;
+let lastReturnTime=0, awayStartTime=0;
+const RETURN_COOLDOWN=10*60*1000;
+const MIN_AWAY_MS=3000;
 
 function onUserReturned(){
   if(!userWasAway) return;
-  userWasAway = false;
+  const awayDuration = Date.now() - awayStartTime;
+  userWasAway=false;
   clearTimeout(returnDebounce);
-  returnDebounce = setTimeout(()=>{
+  if(awayDuration < MIN_AWAY_MS) return;
+  returnDebounce=setTimeout(()=>{
     if(isDismissed) return;
-    const now = Date.now();
-    const bigReturn = now - lastReturnTime > RETURN_COOLDOWN;
-    lastReturnTime = now;
-    const wasOut = isOut;
-
+    const now=Date.now();
+    const bigReturn=now-lastReturnTime>RETURN_COOLDOWN;
+    lastReturnTime=now;
+    const wasOut=isOut;
     if(bigReturn){
-      // 首次或间隔超过 10 分钟：转圈 + 开心
       if(isOut) sinkBack();
       setTimeout(()=>{
-        swimOut();
-        setMood('happy');
-        wrap.classList.add('spin');
-        speak('你回来了，我还在');
+        swimOut(); setMood('happy');
+        wrap.classList.add('spin'); speak('你回来了，我还在');
         setTimeout(()=>wrap.classList.remove('spin'),1500);
-        if(!wasOut) setTimeout(()=>sinkBack(), 5000);
-      }, isOut ? 900 : 0);
+        if(!wasOut) setTimeout(()=>sinkBack(),5000);
+      }, isOut?900:0);
     } else {
-      // 短时间内再次返回：安静打个招呼
       if(!isOut) swimOut();
-      speak(lines.calm[Math.floor(Math.random()*lines.calm.length)], 2000);
+      speak(lines.calm[Math.floor(Math.random()*lines.calm.length)],2000);
     }
-  }, 400);
+  },800);
 }
-
-// 鼠标离开 / 进入浏览器窗口
-document.addEventListener('mouseleave', ()=>{ userWasAway=true; });
-document.addEventListener('mouseenter', onUserReturned);
-// 标签页切换
-document.addEventListener('visibilitychange', ()=>{
-  if(document.hidden) userWasAway=true;
-  else onUserReturned();
+function markUserAway(){
+  if(!userWasAway){ userWasAway=true; awayStartTime=Date.now(); }
+}
+document.addEventListener('mouseleave',markUserAway);
+document.addEventListener('mouseenter',onUserReturned);
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden) markUserAway(); else onUserReturned();
 });
-// 窗口焦点
-window.addEventListener('blur',  ()=>{ userWasAway=true; });
-window.addEventListener('focus', onUserReturned);
+window.addEventListener('blur',markUserAway);
+window.addEventListener('focus',onUserReturned);
 
-// ────────────────────────────────────────────
-//  面板（方向跟随水母位置）
-// ────────────────────────────────────────────
-const EDGES = ['bottom','top','right','left'];
-let prePanelPosX = 0, prePanelPosY = 0;
-
-function getJellyEdge(){
-  const W = window.innerWidth, H = window.innerHeight;
-  const cx = posX + wrap.offsetWidth  / 2;
-  const cy = posY + wrap.offsetHeight / 2;
-  const dists = {
-    bottom: H - cy,
-    top:    cy,
-    right:  W - cx,
-    left:   cx
-  };
-  return Object.entries(dists).sort((a,b) => a[1]-b[1])[0][0];
-}
-
-function applyPanelEdge(edge){
-  EDGES.forEach(e => panel.classList.remove('from-'+e));
-  panel.classList.add('from-'+edge);
-  // 把手定位到水母附近那条边
-  if(edge === 'bottom' || edge === 'top'){
-    const hx = Math.min(Math.max(posX + wrap.offsetWidth/2 - 26, 12),
-                        window.innerWidth - 64);
-    panelHandle.style.left = hx + 'px';
-    panelHandle.style.top  = '';
-  } else {
-    const hy = Math.min(Math.max(posY + wrap.offsetHeight/2 - 26, 12),
-                        window.innerHeight - 64);
-    panelHandle.style.top  = hy + 'px';
-    panelHandle.style.left = '';
-  }
-}
-
-function openPanel(){
-  const edge = getJellyEdge();
-  applyPanelEdge(edge);
-  // 水母向反方向让位
-  prePanelPosX = posX; prePanelPosY = posY;
-  const PANEL_SIZE = ['bottom','top'].includes(edge) ? 188 : 0;
-  const dx = edge==='right' ? -170 : edge==='left'  ?  170 : 0;
-  const dy = edge==='bottom'? -188 : edge==='top'   ?  188 : 0;
-  animateTo(posX + dx, posY + dy, 0.4);
-  panel.classList.add('show');
-  hintStrip.classList.add('hidden');
-}
-
-function closePanel(){
-  panel.classList.remove('show');
-  animateTo(prePanelPosX, prePanelPosY, 0.4);
-  hintStrip.classList.remove('hidden');
-}
-
-panelHandle.addEventListener('click', ()=>
-  panel.classList.contains('show') ? closePanel() : openPanel());
-
-document.querySelectorAll('[data-mood]').forEach(b =>
-  b.addEventListener('click', ()=>setMood(b.dataset.mood,'user')));
-
+// ── 专注 ──
 let focusTimer=null;
-
 function startFocus(){
   if(focusTimer) return;
-  setMood('focus','user');
-  speak('好，开始吧');
+  setMood('focus','user'); speak('陪你专注，我在', 3200);
   focusTag.classList.add('show');
   let total=25*60;
   focusTimer=setInterval(()=>{
-    total-=30;
+    total--;
     if(total<=0){
       clearInterval(focusTimer); focusTimer=null;
       focusTag.classList.remove('show');
-      setMood('happy');
-      wrap.classList.add('spin');
+      setMood('happy'); wrap.classList.add('spin');
       speak('你专注了 25 分钟，真棒');
       setTimeout(()=>wrap.classList.remove('spin'),1500);
       return;
@@ -1042,110 +722,70 @@ function startFocus(){
   },1000);
 }
 
-document.getElementById('btn-focus').addEventListener('click', ()=>{
-  if(!isOut) swimOut();
-  startFocus();
-  closePanel();
-});
+recallEdge.addEventListener('click',recall);
 
-document.getElementById('btn-back').addEventListener('click', ()=>{
-  sinkBack(); bubble.classList.remove('show');
-  setTimeout(()=>{
-    swimOut(); setMood('happy');
-    wrap.classList.add('spin'); speak('你回来啦，我还在');
-    setTimeout(()=>wrap.classList.remove('spin'),1500);
-  },1200);
-  closePanel();
-});
-
-document.getElementById('btn-dismiss').addEventListener('click', ()=>{
-  panel.classList.remove('show'); // hide panel without animating back first
-  dismiss();
-});
-document.getElementById('btn-fade').addEventListener('click', ()=>{ toggleFade(); });
-recallEdge.addEventListener('click', recall);
-
-document.getElementById('btn-tutorial').addEventListener('click', ()=>{
-  closePanel();
-  startTutorial();
-});
-
-// ────────────────────────────────────────────
-//  自动困倦
-// ────────────────────────────────────────────
+// ── 自动困倦 ──
 let idleTO=null;
 function resetIdle(){
   clearTimeout(idleTO);
-  idleTO=setTimeout(()=>{
-    if(!focusTimer && currentMood!=='poked') setMood('sleepy');
-  },60000);
+  idleTO=setTimeout(()=>{ if(!focusTimer && currentMood!=='poked') setMood('sleepy'); },60000);
 }
 ['click','mousemove','keydown'].forEach(ev=>document.addEventListener(ev,resetIdle));
 resetIdle();
 
-// ════════════════════════════════════════════
-//  ★★★ 新手教学系统
-// ════════════════════════════════════════════
-const TUT_STEPS = [
-  {
-    title:'你好，我是水母 🪼',
-    sub:'住在屏幕角落陪着你\n花 30 秒认识一下我？',
-    wait:'btn', btn:'认识一下', arrow:''
-  },
-  {
-    title:'把鼠标慢慢靠近我',
-    sub:'越近越好，我会注意到你的',
-    wait:'proximity', arrow:'向右下角的我靠近 →'
-  },
-  {
-    title:'轻点一下我',
-    sub:'就像戳一下，打个招呼',
-    wait:'tap', arrow:'单击我 →'
-  },
-  {
-    title:'双击我',
-    sub:'开始 25 分钟专注陪伴\n再次双击可随时退出',
-    wait:'dbl', arrow:'双击我 →'
-  },
-  {
-    title:'拖着我换个地方',
-    sub:'我可以住在屏幕任意角落\n贴近边缘会自动吸附',
-    wait:'drag', arrow:'按住拖动我 →'
-  },
-  {
-    title:'快速连点我 4 次',
-    sub:'看看我会有什么反应…',
-    wait:'poked', arrow:'4 次快速点击 →'
-  },
-  {
-    title:'长按我 0.8 秒',
-    sub:'打开更多选项面板',
-    wait:'longpress', arrow:'长按我 →'
-  },
-  {
-    title:'认识完了 ✦',
-    sub:'之后长按随时找我\n鼠标离开再回来，我也会认出你',
-    wait:'btn', btn:'开始陪伴', arrow:''
-  }
+// 深夜困倦
+function checkNightMood(){
+  const h=new Date().getHours();
+  if(!focusTimer && (h>=23||h<8)) setMood('sleepy');
+}
+checkNightMood();
+setInterval(checkNightMood,5*60*1000);
+
+// ════════════ 新手教学 ════════════
+const TUT_DONE_KEY = 'jellymate_tut_done';
+const TUT_STEPS=[
+  {title:'嘿，见到你了 🪼',sub:'我就住在屏幕某个角落\n花 30 秒认识一下？',wait:'btn',btn:'认识一下',arrow:''},
+  {title:'把鼠标慢慢靠近我',sub:'越近越好，我会注意到你的',wait:'proximity',arrow:'向右下角的我靠近 →'},
+  {title:'轻点一下我',sub:'就像戳一下，打个招呼',wait:'tap',arrow:'单击我 →'},
+  {title:'双击我',sub:'开始 25 分钟专注陪伴\n再次双击可随时退出',wait:'dbl',arrow:'双击我 →'},
+  {title:'连击我三下',sub:'我会悄悄隐身，不打扰你\n再点一下就能让我回来',wait:'triple',arrow:'快速三击 →'},
+  {title:'拖着我换个地方',sub:'我可以住在屏幕任意角落\n贴近边缘会自动吸附',wait:'drag',arrow:'按住拖动我 →'},
+  {title:'快速连点我 4 次',sub:'看看我会有什么反应…',wait:'poked',arrow:'4 次快速点击 →'},
+  {title:'长按我 0.8 秒',sub:'我会暂时退下\n右边有个按钮能把我召回',wait:'longpress',arrow:'长按我 →'},
+  {title:'认识完了 ✦',sub:'拖到边缘两次也可以退下\n我就在这，随时找我',wait:'btn',btn:'开始陪伴',arrow:''}
 ];
 
-let tutActive=false, tutStep=0, tutWaiting=false;
-const tutCard   = document.getElementById('tut-card');
-const tutTitle  = document.getElementById('tut-title');
-const tutSub    = document.getElementById('tut-sub');
-const tutActionBtn = document.getElementById('tut-action-btn');
-const tutWaitEl = document.getElementById('tut-waiting');
-const tutDoneEl = document.getElementById('tut-done-flash');
-const tutArrow  = document.getElementById('tut-arrow');
-const tutPfill  = document.getElementById('tut-pfill');
+// 教学卡片显示时保持可交互
+const tutCard=document.getElementById('tut-card');
+tutCard.addEventListener('mouseenter', ()=> api.mouseEnterJelly());
+tutCard.addEventListener('mouseleave', ()=>{
+  if(!wrap.matches(':hover')) api.mouseLeaveJelly();
+});
+const tutTitle=document.getElementById('tut-title');
+const tutSub=document.getElementById('tut-sub');
+const tutActionBtn=document.getElementById('tut-action-btn');
+const tutWaitEl=document.getElementById('tut-waiting');
+const tutDoneEl=document.getElementById('tut-done-flash');
+const tutArrow=document.getElementById('tut-arrow');
+const tutPfill=document.getElementById('tut-pfill');
 const tutProgress=document.getElementById('tut-progress');
 
-tutActionBtn.addEventListener('click', ()=>{
+let tutActive=false, tutStep=0, tutWaiting=false;
+
+tutActionBtn.addEventListener('click',()=>{
   if(!tutActive) return;
-  if(tutStep < TUT_STEPS.length-1) advanceTutorial();
-  else endTutorial();
+  if(tutStep<TUT_STEPS.length-1) advanceTutorial(); else endTutorial(false);
 });
-document.getElementById('tut-skip-btn').addEventListener('click', endTutorial);
+document.getElementById('tut-skip-btn').addEventListener('click',()=>endTutorial(true));
+document.getElementById('tut-back-btn').addEventListener('click',()=>{
+  if(!tutActive || tutStep<=0) return;
+  tutWaiting=false;
+  wrap.classList.remove('tut-success','tut-active');
+  tutCard.classList.remove('step-done');
+  tutDoneEl.classList.remove('show');
+  tutStep--;
+  showTutStep(tutStep);
+});
 
 function startTutorial(){
   tutActive=true; tutStep=0;
@@ -1153,87 +793,209 @@ function startTutorial(){
   if(isDismissed) recall();
   showTutStep(0);
 }
-
 function repositionTutCard(){
-  const rect = wrap.getBoundingClientRect();
-  const cw=264, ch=220, gap=16;
-  let left = rect.left - cw - gap;
-  let top  = rect.top  + (rect.height - ch) / 2;
-  if(left < 12) left = rect.right + gap;
-  if(left + cw > window.innerWidth - 12)
-    left = Math.max(12, rect.left + (rect.width - cw)/2);
-  top = Math.max(12, Math.min(top, window.innerHeight - ch - 12));
-  tutCard.style.left = left + 'px';
-  tutCard.style.top  = top  + 'px';
-}
-
-function showTutStep(i){
-  const step = TUT_STEPS[i];
-  tutWaiting = step.wait !== 'btn';
-  tutTitle.textContent = step.title;
-  tutSub.textContent   = step.sub.replace(/\\n/g,'\n');
-  tutArrow.textContent = step.arrow;
-  tutArrow.style.display = step.arrow ? '' : 'none';
-  tutProgress.textContent = `${i+1} / ${TUT_STEPS.length}`;
-  tutPfill.style.width = ((i/(TUT_STEPS.length-1))*100).toFixed(0)+'%';
-  // 按钮 / 等待提示
-  if(step.wait==='btn'){
-    tutActionBtn.textContent = step.btn || '下一步';
-    tutActionBtn.classList.add('show');
-    tutWaitEl.classList.remove('show');
+  const cw=264, ch=240, gap=12;
+  let left, top;
+  if(edgeDockSide==='right'){
+    left = posX - cw - gap;
+    top  = posY + 40;
+  } else if(edgeDockSide==='left'){
+    left = posX + wrap.offsetWidth + gap;
+    top  = posY + 40;
+  } else if(edgeDockSide==='top'){
+    left = posX + (wrap.offsetWidth-cw)/2;
+    top  = posY + wrap.offsetHeight + gap;
+  } else if(edgeDockSide==='bottom'){
+    left = posX + (wrap.offsetWidth-cw)/2;
+    top  = posY - ch - gap;
   } else {
-    tutActionBtn.classList.remove('show');
-    tutWaitEl.classList.add('show');
+    left = posX - cw - gap;
+    top  = posY + 40;
+    if(left < 12) left = posX + wrap.offsetWidth + gap;
   }
-  tutDoneEl.classList.remove('show');
-  tutCard.classList.remove('step-done');
-  // 水母高亮
-  wrap.classList.add('tut-active');
-  // 教学卡贴近水母
-  repositionTutCard();
-  wrap.classList.add('tut-active');
+  left=Math.max(12,Math.min(left,window.innerWidth-cw-12));
+  top=Math.max(12,Math.min(top,window.innerHeight-ch-12));
+  tutCard.style.left=left+'px'; tutCard.style.top=top+'px';
 }
-
+function showTutStep(i){
+  const step=TUT_STEPS[i];
+  tutWaiting=step.wait!=='btn';
+  tutTitle.textContent=step.title;
+  tutSub.textContent=step.sub.replace(/\\n/g,'\n');
+  tutArrow.textContent=step.arrow;
+  tutArrow.style.display=step.arrow?'':'none';
+  tutProgress.textContent=`${i+1} / ${TUT_STEPS.length}`;
+  tutPfill.style.width=((i/(TUT_STEPS.length-1))*100).toFixed(0)+'%';
+  document.getElementById('tut-back-btn').disabled=(i===0);
+  if(step.wait==='btn'){
+    tutActionBtn.textContent=step.btn||'下一步';
+    tutActionBtn.classList.add('show'); tutWaitEl.classList.remove('show');
+  } else {
+    tutActionBtn.classList.remove('show'); tutWaitEl.classList.add('show');
+  }
+  tutDoneEl.classList.remove('show'); tutCard.classList.remove('step-done');
+  wrap.classList.add('tut-active');
+  // 问题6修复：进入 proximity 步骤时重置近距离状态，使当前位置也可触发
+  if(step.wait==='proximity'){
+    nearState=false;
+    wrap.classList.remove('near');
+  }
+  repositionTutCard();
+  api.mouseEnterJelly();
+}
 function tutSignal(type){
-  if(!tutActive || !tutWaiting) return;
-  const expected = TUT_STEPS[tutStep].wait;
-  if(expected !== type) return;
+  if(!tutActive||!tutWaiting) return;
+  if(TUT_STEPS[tutStep].wait!==type) return;
   advanceTutorial();
 }
-
 function advanceTutorial(){
-  tutWaiting=false;
-  tutWaitEl.classList.remove('show');
-  tutDoneEl.classList.add('show');
-  tutCard.classList.add('step-done');
-  wrap.classList.add('tut-success');
-  // 小庆祝
-  wrap.classList.add('spin');
+  tutWaiting=false; tutWaitEl.classList.remove('show');
+  tutDoneEl.classList.add('show'); tutCard.classList.add('step-done');
+  wrap.classList.add('tut-success','spin');
   setTimeout(()=>{
-    wrap.classList.remove('spin','tut-success');
-    tutCard.classList.remove('step-done');
-    tutDoneEl.classList.remove('show');
-    tutStep++;
-    if(tutStep >= TUT_STEPS.length) endTutorial();
-    else showTutStep(tutStep);
-  }, 900);
+    wrap.classList.remove('spin','tut-success'); tutCard.classList.remove('step-done');
+    tutDoneEl.classList.remove('show'); tutStep++;
+    if(tutStep>=TUT_STEPS.length) endTutorial(false); else showTutStep(tutStep);
+  },900);
 }
-
-function endTutorial(){
+function endTutorial(skipped=false){
   tutActive=false; tutWaiting=false;
   tutCard.classList.remove('show');
   wrap.classList.remove('tut-active','tut-success');
-  // 教学结束时给一句话
-  speak('很高兴认识你 🪼', 3000);
-  setMood('happy');
+  if(isDismissed) recall();
+  // 确保光圈彻底消失，延迟再清一次防止动画遗留
+  setTimeout(()=>wrap.classList.remove('tut-active','tut-success'), 150);
+  // 恢复鼠标穿透（若鼠标不在水母上则还原透明点击）
+  setTimeout(()=>{
+    if(!wrap.matches(':hover')){
+      api.mouseLeaveJelly();
+    }
+  }, 400);
+  if(skipped){
+    speak('好，我就在这 🪼',3500); setMood('calm');
+  } else {
+    localStorage.setItem(TUT_DONE_KEY,'1');
+    speak('很高兴认识你 🪼',3000); setMood('happy');
+  }
 }
 
-// ────────────────────────────────────────────
-//  初始化
-// ────────────────────────────────────────────
+// ── 初始化 ──
 initPosition();
-applyPanelEdge(getJellyEdge());   // 初始设定面板方向
-setTimeout(()=> speak('我在', 2200), 600);
+if(localStorage.getItem(TUT_DONE_KEY)){
+  setTimeout(()=>speak('我在',2200),600);
+} else {
+  setTimeout(startTutorial, 800);
+}
+
+// Shift+T → 重置并重新播放新手引导
+function resetAndStartTutorial(){
+  localStorage.removeItem(TUT_DONE_KEY);
+  if(tutActive) endTutorial(true);
+  setTimeout(startTutorial, 300);
+}
+// 全局快捷键（Electron）：不依赖窗口焦点
+if(IS_ELECTRON) api.onResetTutorial(resetAndStartTutorial);
+// 降级：网页模式或窗口已获焦点时的键盘监听
+document.addEventListener('keydown', e => {
+  if(e.shiftKey && e.key === 'T') resetAndStartTutorial();
+});
+
+// ── 拖拽旋转物理 ──
+const rotWrapEl = document.getElementById('rot-wrap');
+let rotRefX = posX + 100, rotRefY = posY + 150;
+const ROT_REF_RATE = 0.015;
+let rotAngle = 0, rotVel = 0;
+const ROT_K = 0.020, ROT_D = 0.88;
+const ROT_MAX_TILT = 6;   // 普通拖拽最大倾斜度
+let rotSpinMode = 0;       // 0~1，1=完全转圈姿态
+let rotAccAngle = 0;       // 同向累计角度（720°=2圈才触发）
+let rotLastAngSign = 0;
+let rotPrevDx = 0, rotPrevDy = 0;
+
+function rotShortDiff(from, to){
+  let d = to - from;
+  while(d >  180) d -= 360;
+  while(d < -180) d += 360;
+  return d;
+}
+function resetRotState(){
+  rotSpinMode = 0; rotAccAngle = 0; rotLastAngSign = 0;
+  rotPrevDx = 0; rotPrevDy = 0;
+}
+wrap.addEventListener('mousedown', () => {
+  rotRefX = posX + 100; rotRefY = posY + 150;
+  resetRotState();
+}, true);
+
+(function rotLoop(){
+  const cx = posX + 100, cy = posY + 150;
+  let targetRot;
+
+  if(drag.active && drag.moved){
+    rotRefX += (cx - rotRefX) * ROT_REF_RATE;
+    rotRefY += (cy - rotRefY) * ROT_REF_RATE;
+    const dx = cx - rotRefX, dy = cy - rotRefY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if(dist > 10 && (rotPrevDx !== 0 || rotPrevDy !== 0)){
+      const cross  = rotPrevDx * dy - rotPrevDy * dx;
+      const dot    = rotPrevDx * dx + rotPrevDy * dy;
+      const angVel = Math.atan2(cross, dot) * 180 / Math.PI;
+      const sign   = Math.sign(cross);
+      if(sign !== 0 && Math.abs(angVel) > 0.8){
+        if(rotLastAngSign !== 0 && sign !== rotLastAngSign){
+          rotAccAngle = 0;              // 方向反转 → 清零
+        } else {
+          rotAccAngle += Math.abs(angVel);
+        }
+        rotLastAngSign = sign;
+      }
+      if(rotAccAngle >= 720) rotSpinMode = 1.0;  // 2 整圈解锁
+      rotPrevDx = dx; rotPrevDy = dy;
+    } else if(dist > 10){
+      rotPrevDx = dx; rotPrevDy = dy;
+    }
+
+    if(dist > 10){
+      const fullAngle = Math.atan2(dx, -dy) * 180 / Math.PI;
+      if(rotSpinMode > 0.3){
+        targetRot = fullAngle;
+      } else {
+        const raw = rotShortDiff(0, fullAngle);
+        const clamped = Math.max(-ROT_MAX_TILT, Math.min(ROT_MAX_TILT, raw));
+        targetRot = rotAngle + rotShortDiff(rotAngle, clamped);
+      }
+    } else {
+      targetRot = rotAngle;
+    }
+  } else {
+    rotRefX += (cx - rotRefX) * 0.08;
+    rotRefY += (cy - rotRefY) * 0.08;
+    if(!drag.active){ rotPrevDx = 0; rotPrevDy = 0; }
+    targetRot = 0;
+  }
+
+  rotSpinMode *= 0.975;
+  const diff = rotShortDiff(rotAngle, targetRot);
+  rotVel += diff * ROT_K;
+  rotVel *= ROT_D;
+  rotAngle += rotVel;
+  rotWrapEl.style.transform = `rotate(${rotAngle.toFixed(2)}deg)`;
+  requestAnimationFrame(rotLoop);
+})();
 </script>
+
+<button id="demo-tut-btn" onclick="resetAndStartTutorial()" style="
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  padding:9px 24px;border-radius:22px;
+  border:1px solid rgba(127,216,232,.35);
+  background:rgba(10,20,50,.75);
+  color:#7fd8e8;font-size:13px;font-family:inherit;
+  cursor:pointer;z-index:200;
+  backdrop-filter:blur(8px);
+  transition:opacity .2s;
+  pointer-events:all;
+" onmouseenter="this.style.opacity='.8'" onmouseleave="this.style.opacity='1'">新手引导 →</button>
+
 </body>
 </html>
