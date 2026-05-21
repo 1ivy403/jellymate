@@ -38,12 +38,6 @@ export default function HomePage() {
         </span>
         <div className="flex items-center gap-3">
           <Link
-            href="/login"
-            style={{ color: 'var(--ink-dim)', fontSize: 14, padding: '8px 16px', border: '1px solid var(--line)', borderRadius: 10 }}
-          >
-            登录
-          </Link>
-          <Link
             href="/download"
             style={{ background: 'var(--glow)', color: '#06121f', fontSize: 14, fontWeight: 600, padding: '8px 18px', borderRadius: 10 }}
             className="hover:opacity-90 transition-opacity"
