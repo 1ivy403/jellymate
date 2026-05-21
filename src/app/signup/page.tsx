@@ -33,9 +33,19 @@ export default function SignupPage() {
       <div className="w-full max-w-sm rounded-2xl p-8" style={{ background: 'rgba(18,30,58,.88)', border: '1px solid var(--line)' }}>
         {done ? (
           <div className="text-center">
-            <div className="text-4xl mb-4">🪼</div>
+            <div className="text-4xl mb-4">📬</div>
             <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--ink)' }}>检查一下邮箱</h2>
-            <p className="text-sm" style={{ color: 'var(--ink-dim)' }}>我们发了一封确认邮件，点击链接即可开始陪伴</p>
+            <p className="text-sm mb-6" style={{ color: 'var(--ink-dim)' }}>
+              我们发了一封确认邮件，点击链接后会自动跳到下载页面
+            </p>
+            <div className="p-3 rounded-xl text-sm mb-4" style={{ background: 'rgba(127,216,232,.06)', border: '1px solid var(--line)' }}>
+              <p style={{ color: 'var(--ink-dim)' }}>也可以现在先去下载：</p>
+            </div>
+            <a href="/download"
+              className="block py-3 rounded-xl font-semibold text-sm transition-all hover:opacity-90"
+              style={{ background: 'var(--glow)', color: '#06121f' }}>
+              前往下载 JellyMate →
+            </a>
           </div>
         ) : (
           <>

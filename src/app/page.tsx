@@ -46,8 +46,8 @@ export default function HomePage() {
           在你需要的时候在，不需要的时候退下。
         </p>
         <div className="flex gap-4">
-          <Link href="/signup" className="px-7 py-3 rounded-2xl font-semibold text-base transition-all hover:opacity-90" style={{ background: 'var(--glow)', color: '#06121f' }}>
-            免费体验
+          <Link href="/download" className="px-7 py-3 rounded-2xl font-semibold text-base transition-all hover:opacity-90" style={{ background: 'var(--glow)', color: '#06121f' }}>
+            下载 macOS App
           </Link>
           <Link href="/demo" className="px-7 py-3 rounded-2xl text-base transition-all" style={{ background: 'rgba(127,216,232,.1)', color: 'var(--glow-soft)', border: '1px solid var(--line)' }}>
             先看演示
@@ -68,14 +68,15 @@ export default function HomePage() {
       </section>
 
       <section className="text-center pb-24 px-6">
-        <p className="text-sm mb-6" style={{ color: 'var(--ink-dim)' }}>目前为 Web 体验版 · macOS 原生 App 开发中</p>
-        <Link href="/signup" className="inline-block px-8 py-4 rounded-2xl font-semibold text-base transition-all hover:opacity-90" style={{ background: 'var(--glow)', color: '#06121f' }}>
-          开始陪伴 →
+        <p className="text-sm mb-6" style={{ color: 'var(--ink-dim)' }}>macOS 原生 App · 免费下载</p>
+        <Link href="/download" className="inline-block px-8 py-4 rounded-2xl font-semibold text-base transition-all hover:opacity-90" style={{ background: 'var(--glow)', color: '#06121f' }}>
+          下载 JellyMate →
         </Link>
       </section>
 
-      <footer className="text-center pb-8 text-xs" style={{ color: 'var(--ink-dim)', opacity: 0.5 }}>
-        JellyMate · 低打扰陪伴
+      <footer className="text-center pb-8 text-xs flex items-center justify-center gap-4" style={{ color: 'var(--ink-dim)', opacity: 0.5 }}>
+        <span>JellyMate · 低打扰陪伴</span>
+        <Link href="/privacy" style={{ color: 'var(--ink-dim)' }}>隐私说明</Link>
       </footer>
     </main>
   )

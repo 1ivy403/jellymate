@@ -11,7 +11,7 @@ export default function DemoPage() {
         </Link>
       </div>
       <iframe
-        src="/prototype"
+        src="/prototype.html"
         className="flex-1 w-full border-none"
         title="JellyMate 原型演示"
       />
