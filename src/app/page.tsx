@@ -24,8 +24,8 @@ export default function HomePage() {
           <Link href="/login" className="text-sm px-4 py-2 rounded-xl transition-all" style={{ color: 'var(--ink-dim)', border: '1px solid var(--line)' }}>
             登录
           </Link>
-          <Link href="/signup" className="text-sm px-4 py-2 rounded-xl font-medium transition-all hover:opacity-90" style={{ background: 'var(--glow)', color: '#06121f' }}>
-            免费开始
+          <Link href="/download" className="text-sm px-4 py-2 rounded-xl font-medium transition-all hover:opacity-90" style={{ background: 'var(--glow)', color: '#06121f' }}>
+            下载 App
           </Link>
         </div>
       </nav>
