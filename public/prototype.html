@@ -291,8 +291,8 @@ const eyesEl      = wrap.querySelector('.eyes');
 // ── 位置 ──
 let posX = 0, posY = 0;
 function initPosition(){
-  posX = window.innerWidth  - wrap.offsetWidth  - 30;
-  posY = window.innerHeight - wrap.offsetHeight - 20;
+  posX = (window.innerWidth  - wrap.offsetWidth)  / 2;
+  posY = (window.innerHeight - wrap.offsetHeight) / 2;
   applyPos();
 }
 function applyPos(){
