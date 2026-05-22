@@ -413,7 +413,7 @@ function recall(){
   animateTo(posX, posY);
   setMood('happy'); speak('我回来啦');
   wrap.classList.add('spin');
-  setTimeout(() => wrap.classList.remove('spin'), 1500);
+  setTimeout(() => { rotAngle=0; rotVel=0; rotWrapEl.style.transform='rotate(0deg)'; wrap.classList.remove('spin'); }, 1500);
   isOut = true;
 }
 function toggleFade(){
@@ -588,7 +588,7 @@ function onSingleClick(){
 function onDoubleClick(){
   if(isDismissed) return;
   wrap.classList.add('spin');
-  setTimeout(()=>wrap.classList.remove('spin'),1400);
+  setTimeout(()=>{ rotAngle=0; rotVel=0; rotWrapEl.style.transform='rotate(0deg)'; wrap.classList.remove('spin'); },1400);
   if(focusTimer){
     clearInterval(focusTimer); focusTimer=null;
     focusTag.classList.remove('show');
@@ -679,7 +679,7 @@ function onUserReturned(){
       setTimeout(()=>{
         swimOut(); setMood('happy');
         wrap.classList.add('spin'); speak('你回来了，我还在');
-        setTimeout(()=>wrap.classList.remove('spin'),1500);
+        setTimeout(()=>{ rotAngle=0; rotVel=0; rotWrapEl.style.transform='rotate(0deg)'; wrap.classList.remove('spin'); },1500);
         if(!wasOut) setTimeout(()=>sinkBack(),5000);
       }, isOut?900:0);
     } else {
@@ -713,7 +713,7 @@ function startFocus(){
       focusTag.classList.remove('show');
       setMood('happy'); wrap.classList.add('spin');
       speak('你专注了 25 分钟，真棒');
-      setTimeout(()=>wrap.classList.remove('spin'),1500);
+      setTimeout(()=>{ rotAngle=0; rotVel=0; rotWrapEl.style.transform='rotate(0deg)'; wrap.classList.remove('spin'); },1500);
       return;
     }
     const mm=String(Math.floor(total/60)).padStart(2,'0');
@@ -853,6 +853,7 @@ function advanceTutorial(){
   tutDoneEl.classList.add('show'); tutCard.classList.add('step-done');
   wrap.classList.add('tut-success','spin');
   setTimeout(()=>{
+    rotAngle=0; rotVel=0; rotWrapEl.style.transform='rotate(0deg)';
     wrap.classList.remove('spin','tut-success'); tutCard.classList.remove('step-done');
     tutDoneEl.classList.remove('show'); tutStep++;
     if(tutStep>=TUT_STEPS.length) endTutorial(false); else showTutStep(tutStep);
